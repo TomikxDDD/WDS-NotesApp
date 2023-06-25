@@ -1,20 +1,26 @@
 import { Form, Stack, Row, Col, Button } from 'react-bootstrap';
 import CreatableReactSelect from 'react-select/creatable'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { useState, useRef, FormEvent } from 'react';
 import { NoteData, Tag } from '../../App';
+import { v4 } from "uuid"
+
 
 
 interface NoteFormProps{
   onSubmit: (data: NoteData) => void
+  onAddTag: (tag: Tag) => void
+  availableTags: Tag[]
 }
 
-const NoteForm: React.FC<NoteFormProps> = ({ onSubmit }) => {
+const NoteForm: React.FC<NoteFormProps> = ({ onSubmit, onAddTag, availableTags }) => {
 
   const titleRef = useRef<HTMLInputElement>(null)
   const markdownRef = useRef<HTMLTextAreaElement>(null)
 
   const [selectedTags, setSelectedTags] = useState<Tag[]>([])
+
+  const navigate = useNavigate()
 
   function handleSubmit(e: FormEvent){
     e.preventDefault()
@@ -22,8 +28,10 @@ const NoteForm: React.FC<NoteFormProps> = ({ onSubmit }) => {
     onSubmit({
       title: titleRef.current!.value,
       markdown: markdownRef.current!.value,
-      tags: []
+      tags: selectedTags
     })
+
+    navigate('..') // Sends the user to the previous page
   }
 
   return ( 
@@ -41,8 +49,17 @@ const NoteForm: React.FC<NoteFormProps> = ({ onSubmit }) => {
               <Form.Group controlId='tags'>
                 <Form.Label>Tags</Form.Label>
                 <CreatableReactSelect 
+                // This function is called when we create a new Tag. onChange is not called when we create a new tag
+                  onCreateOption={ label => {
+                    const newTag = { id: v4(), label: label }
+                    onAddTag(newTag)
+                    setSelectedTags(prevTags => [...prevTags, newTag])
+                  }}
                   value={selectedTags.map(tag => {
                     return { label: tag.label, value: tag.id } // This is the shape which the CreatebleReactSelect expects
+                  })}
+                  options={availableTags.map(tag => {
+                    return { label: tag.label, value: tag.id} // This is the shape which the CreatebleReactSelect expects
                   })}
                   onChange={tags => {
                     setSelectedTags(tags.map(tag => {
