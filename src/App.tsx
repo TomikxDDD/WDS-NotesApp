@@ -45,13 +45,8 @@ function App() {
   const [notes, setNotes] = useLocalStorage<RawNote[]>("NOTES", [])
   const [tags, setTags] = useLocalStorage<Tag[]>("TAGS", [])
 
-  const [count, setCount] = useState(0)
-
-  console.log("App rerendered. notes:", notes, ". Tags: ", tags)
 
   const notesWithTags = useMemo(() => {
-    console.log("Notes or tags changed")
-    setCount(oldCount => oldCount+1)
     return notes.map(note => {
       return {
         ...note, 
@@ -107,9 +102,6 @@ function App() {
     }))
   }
 
-
-  console.log("Notes with tags: ", notesWithTags)
-
   return (
     <>
       <Container className='my-4'>
@@ -156,7 +148,6 @@ function App() {
             path='*' 
             element={<Navigate to='/'/>} />       
         </Routes>
-      <div>{count}</div>
       </Container>
     </>
   )
