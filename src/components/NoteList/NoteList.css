@@ -1,0 +1,7 @@
+.notes__header{
+  display: flex;
+}
+
+.notes__header__h1 {
+  margin: 2em;
+}

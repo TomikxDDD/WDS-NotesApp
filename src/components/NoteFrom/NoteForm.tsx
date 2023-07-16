@@ -6,19 +6,26 @@ import { NoteData, Tag } from '../../App';
 import { v4 } from "uuid"
 
 
-
-interface NoteFormProps{
+// Conditionally adding all the properties of NoteData type - to make it possible to visualize for editing the note
+type NoteFormProps = {
   onSubmit: (data: NoteData) => void
   onAddTag: (tag: Tag) => void
   availableTags: Tag[]
-}
+} & Partial<NoteData>
 
-const NoteForm: React.FC<NoteFormProps> = ({ onSubmit, onAddTag, availableTags }) => {
+const NoteForm: React.FC<NoteFormProps> = ({ 
+  onSubmit, 
+  onAddTag, 
+  availableTags, 
+  title="", 
+  tags=[], 
+  markdown="" 
+}) => {
 
   const titleRef = useRef<HTMLInputElement>(null)
   const markdownRef = useRef<HTMLTextAreaElement>(null)
 
-  const [selectedTags, setSelectedTags] = useState<Tag[]>([])
+  const [selectedTags, setSelectedTags] = useState<Tag[]>(tags)
 
   const navigate = useNavigate()
 
@@ -42,7 +49,7 @@ const NoteForm: React.FC<NoteFormProps> = ({ onSubmit, onAddTag, availableTags }
             <Col>
               <Form.Group controlId='title'>
                 <Form.Label>Title</Form.Label>
-                <Form.Control ref={titleRef} required />
+                <Form.Control ref={titleRef} required defaultValue={title}/>
               </Form.Group>
             </Col>
             <Col>
@@ -74,7 +81,7 @@ const NoteForm: React.FC<NoteFormProps> = ({ onSubmit, onAddTag, availableTags }
             <Col>
               <Form.Group controlId='markdown'>
                 <Form.Label>Note</Form.Label>
-                <Form.Control ref={markdownRef} as="textarea" rows={10} />
+                <Form.Control ref={markdownRef} as="textarea" rows={10} defaultValue={markdown} />
               </Form.Group>
             </Col>
           </Row>
